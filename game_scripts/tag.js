@@ -57,6 +57,8 @@ function handler(width, height){
     this.colors = ["#ff0000", "#00ff00", "#0000ff", "#ff00ff", "#00ffff", "#ffff00"];
     this.update_rate = 1 / 60; // This is in seconds.
 
+    this.last_time = new Date();
+
     this.add_random_entity = function(){
         var col = this.colors[randInt(0, this.colors.length-1)];
         var position = new vector(randInt(0, this.width-64), randInt(0, this.height-64));
@@ -73,7 +75,15 @@ function handler(width, height){
 		}
     }
 
-    this.update = function(input){
+    this.update = function(input) {
+        // Handle user input and update all entities.
+
+        // Gets the time since the last frame in seconds
+        new_time = new Date();
+        delta = (new_time - this.last_time) / 1000;
+        this.last_time = new_time;
+        
+        // Handle user input
         var pos = new vector(0, 0);
         if (input[87]){ // W
             pos = pos.add(new vector(0, -1));
@@ -89,7 +99,7 @@ function handler(width, height){
         }
         
 		for (var i = 0; i < this.entities.length; i++) {
-			this.entities[i].update(pos, this.update_rate);
+			this.entities[i].update(pos, delta);
 		}
     }
 }
