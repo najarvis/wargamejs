@@ -1,0 +1,20 @@
+{
+  "name": "wargamejs",
+  "version": "1.0.0",
+  "description": "A real-time wargrame written in NodeJS",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "wargamejs"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.3",
+    "node-uuid": "^1.4.8",
+    "socket.io": "^2.0.2"
+  }
+}
