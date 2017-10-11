@@ -1,5 +1,20 @@
 $(document).ready(function() {
-    gameSpace.start();
+
+    var socket = io.connect('/');
+
+    socket.on('onconnected', function(data) {
+        console.log('Connected successfully to the server. Client ID: ' + data.id);
+
+        gameSpace.start();
+        gameSpace.gameHandler.main_clientID = data.id;
+
+    });
+
+    socket.on('server_update', function(data) {
+        gameSpace.gameHandler.client_data = data;
+        console.log(data);
+    });
+
 });
 
 KEYS = [];
@@ -58,6 +73,8 @@ function handler(width, height){
     this.update_rate = 1 / 60; // This is in seconds.
 
     this.last_time = new Date();
+    this.main_clientID = undefined;
+    this.client_data = {};
 
     this.add_random_entity = function(){
         var col = this.colors[randInt(0, this.colors.length-1)];
@@ -70,9 +87,18 @@ function handler(width, height){
     }
 
     this.draw = function(){
+        this.entities = [];
+        for (var client in this.client_data) {
+            this.add_entity(this.client_data[client].position, this.client_data[client].color);
+        }
+        
 		for (var i = 0; i < this.entities.length; i++) {
 			this.entities[i].draw();
 		}
+    }
+
+    this.set_client_data = function(data) {
+        this.client_data = data;
     }
 
     this.update = function(input) {
@@ -98,9 +124,8 @@ function handler(width, height){
             pos = pos.add(new vector(1, 0));
         }
         
-		for (var i = 0; i < this.entities.length; i++) {
-			this.entities[i].update(pos, delta);
-		}
+        socket.emit('client_data', {id: this.main_clientID, pos: pos});
+        //this.client_data[this.main_clientID].update(pos, delta);
     }
 }
 
@@ -130,12 +155,13 @@ function player(position, color){
 
 }
 
-
 function collide_players(p1, p2){
+    // Returns true if p1 is colliding with p2.
     return Math.abs(p1.position.elements[0] - p2.position.elements[0]) < p1.size &&
            Math.abs(p1.position.elements[1] - p2.position.elements[1]) < p1.size;
 }
 
 function randInt(min, max) {
+    // Generate a random number between min and max (inclusive)
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }

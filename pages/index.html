@@ -2,16 +2,9 @@
     <head>
         <title>WargameJS</title>
         <script type="text/javascript" src="/socket.io/socket.io.js"></script>
-        <script type="text/javascript">
-            var socket = io.connect('/');
-
-            socket.on('onconnected', function(data) {
-                console.log('Connected successfully to the server. Client ID: ' + data.id);
-            });
-        </script>
+        <script type="text/javascript" src="/game_scripts/vector.js" async></script>
+        <script type="text/javascript" src="/game_scripts/tag.js" async></script>
         <script type="text/javascript" src="/res/js/jquery-3.2.1.min.js"></script>
-        <script type="text/javascript" src="/game_scripts/vector.js"></script>
-        <script type="text/javascript" src="/game_scripts/tag.js"></script>
         <style>
             canvas {
                 overflow: hidden;

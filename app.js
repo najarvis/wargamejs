@@ -16,7 +16,7 @@ app.get('/*', function(req, res, next){
     res.sendFile(__dirname + '/' + req.params[0]);
 });
 
-var sio = io.listen(http);
+//var sio = io.listen(http);
 
 /*
 sio.configure(function() {
@@ -28,7 +28,9 @@ sio.configure(function() {
 });
 */
 
-sio.sockets.on('connection', function(client) {
+var client_data = {};
+
+io.sockets.on('connection', function(client) {
     
     client.userid = UUID();
 
@@ -38,4 +40,19 @@ sio.sockets.on('connection', function(client) {
     client.on('disconnect', function() {
         console.log('Client disconnected: ' + client.userid); 
     });
+
+    client.on('initial_connect', function(msg) {
+        client_data[msg.id] = {position: msg.pos, color: msg.color}
+    }
+
+    client.on('client_update', function(msg) {
+        client_data[msg.id].position = client_data[msg.id].position.add(msg.pos);
+    });
+
 });
+
+var tick_rate = 20; // milliseconds / update
+
+setInterval(function() {
+    io.emit('server_update', client_data);
+}, tick_rate);
